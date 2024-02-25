@@ -428,7 +428,7 @@ static int overlay_add_to_local_fixups(void *fdt, const char *value, int len)
 		if (!sep || *sep != ':')
 			return -FDT_ERR_BADOVERLAY;
 		pathlen = sep - path;
-		if (pathlen == (fixup_len - 1))
+		if ((uint32_t)pathlen == (fixup_len - 1))
 			return -FDT_ERR_BADOVERLAY;
 
 		fixup_len -= (pathlen + 1);
@@ -1216,7 +1216,7 @@ static int rename_fragments_in_property(void *fdto, int offset,
 		sep += 9;
 		needed += (sep - start);
 		index = strtoul(sep, &stop, 10);
-		if (ULONG_MAX - index < delta)
+		if (index > ULONG_MAX - delta)
 			return -FDT_ERR_BADVALUE;
 
 		new_index = index + delta;
@@ -1356,7 +1356,7 @@ static int rename_nodes(void *fdto, int parent_node, unsigned long delta)
 			new_index = index + delta;
 			ret = snprintf(new_name, sizeof(new_name),
 						"fragment@%lu", new_index);
-			if (ret >= sizeof(new_name))
+			if (ret >= (int)sizeof(new_name))
 				return -FDT_ERR_BADVALUE;
 
 			ret = fdt_set_name(fdto, offset, new_name);
